@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   HttpCode,
@@ -16,17 +17,19 @@ import { CreateProPertySchema } from './dto/createPropertyZod.dto';
 import { ZodValidationPipe } from './pipes/zodValidationPipe';
 import { HeadersDto } from './dto/headers.dto';
 import { RequestHeader } from './pipes/request-header';
+import { PropertyService } from './property.service';
+import { UpdatePropertyDto } from './dto/updateProperty.dto';
 
 @Controller('property')
 export class PropertyController {
+  constructor(private propertyService: PropertyService) {}
   @Get()
   findAll() {
-    return 'Hello World';
+    this.propertyService.findAll();
   }
   @Get(':id')
   findOne(@Param('id') id: string) {
-    console.log(id);
-    return `Hello World ${id} `;
+    return this.propertyService.findOne(id);
   }
   @Get(':id/location/:location')
   findOneWithLocation(
@@ -37,19 +40,19 @@ export class PropertyController {
   }
 
   @Post()
-  // @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(CreateProPertySchema))
   create(@Body() body: CreatePropertyDto) {
-    return body;
+    return this.propertyService.create(body);
   }
   @Patch(':id')
-  @HttpCode(201)
   update(
     @Param('id', ParseIdPipe) id: number,
-    @Body() body: CreatePropertyDto,
-    @RequestHeader(new ValidationPipe({ validateCustomDecorators: true }))
-    headers: HeadersDto,
+    @Body() body: UpdatePropertyDto,
   ) {
-    return { ...body, ...headers };
+    return this.propertyService.update(id, body);
+  }
+  @Delete(':id')
+  @HttpCode(204)
+  delete(@Param('id', ParseIdPipe) id: string) {
+    return this.propertyService.delete(id);
   }
 }

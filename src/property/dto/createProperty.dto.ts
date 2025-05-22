@@ -10,7 +10,7 @@ export class CreatePropertyDto {
   @IsString()
   @IsNotEmpty()
   description: string;
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  area: number;
+  area: string;
 }
