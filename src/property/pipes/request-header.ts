@@ -1,9 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
 
 export const RequestHeader = createParamDecorator(
-  async (targetsDto: any, ctx: ExecutionContext) => {
+  (targetsDto: any, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<Request>();
     const headers = request.headers;
     const dto = plainToInstance(targetsDto, headers, {
