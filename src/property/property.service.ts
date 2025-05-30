@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Property } from '../entities/property.entity';
 import { Repository } from 'typeorm';
 import { CreatePropertyDto } from './dto/createProperty.dto';
 import { UpdatePropertyDto } from './dto/updateProperty.dto';
+import { PaginationDto } from './dto/pagination.dto';
+import { DEFAULT_PAGINATION } from 'src/utils/constant';
 
 @Injectable()
 export class PropertyService {
   constructor(
     @InjectRepository(Property) private propertyRepo: Repository<Property>,
   ) {}
-  findAll() {
-    return 'This action returns all property';
+  async findAll(paginationDTO: PaginationDto) {
+    const property = await this.propertyRepo.find({
+      skip: paginationDTO.skip,
+      take: paginationDTO.limit ?? DEFAULT_PAGINATION,
+    });
+    if (!property) {
+      return { message: 'Property not found' };
+    }
+    return property;
   }
 
   async findOne(id: string) {
