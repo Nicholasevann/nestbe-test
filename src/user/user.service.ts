@@ -10,6 +10,13 @@ export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
+  async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    await this.userRepository.update(user.id, { hashedRefreshToken });
+  }
   async create(createUserDto: CreateUserDto) {
     const user = this.userRepository.create(createUserDto);
     await this.userRepository.save(user);
@@ -23,7 +30,7 @@ export class UserService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.userRepository.findOne({ where: { id } });
   }
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
